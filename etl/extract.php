@@ -123,6 +123,7 @@ foreach ($sources as $falter => $path) {
     fclose($handle);
 }
 
+// In Terminal ausgeben, wie viele Zeilen eingelesen wurden, als Test, ob unser extract.php richtig aufgebaut ist
 echo count($rawRows) . " Zeilen eingelesen\n";
 print_r($rawRows[0]);
 print_r($rawRows[count($rawRows) - 1]);
