@@ -84,36 +84,14 @@ foreach ($sources as $falter => $path) {
         if ($falter === 'aufnahme') {
             $rawRows[] = [
                 'observation_id' => $row[$courseColumn],
-                'site_id' => $row['aID_STAO'],
                 'year' => $row['yearBu'],
-                'date_1' => $row['Date_Bu1'],
-                'date_2' => $row['Date_Bu2'],
-                'date_3' => $row['Date_Bu3'],
-                'date_4' => $row['Date_Bu4'],
-                'date_5' => $row['Date_Bu5'],
-                'date_6' => $row['Date_Bu6'],
-                'date_7' => $row['Date_Bu7'],
-                'canton' => $row['Kanton'],
-                'region' => $row['BGR_6'],
-                'transect_km' => $row['Transektlaenge'],
             ];
         }
 
         if ($falter === 'sichtung') {
             $rawRows[] = [
                 'observation_id' => $row[$courseColumn],
-                'species_id' => $row['aID_SP'],
-                'extra_species' => $row['Zusatzart'],
-                'count_total' => $row['Ind'],
-                'count_1' => $row['Ind1'],
-                'count_2' => $row['Ind2'],
-                'count_3' => $row['Ind3'],
-                'count_4' => $row['Ind4'],
-                'count_5' => $row['Ind5'],
-                'count_6' => $row['Ind6'],
-                'count_7' => $row['Ind7'],
-                'genus' => $row['Genus'],
-                'species' => $row['Species'],
+                'count' => $row['Ind'],
             ];
         }
     }
@@ -127,7 +105,6 @@ foreach ($sources as $falter => $path) {
 echo count($rawRows) . " Zeilen eingelesen\n";
 print_r($rawRows[0]);
 print_r($rawRows[count($rawRows) - 1]);
-
 
 // include kann den Rückgabewert einer Datei übernehmen. Neben den Rohdaten
 // werden die verarbeiteten Semesterkürzel mitgeliefert; das erleichtert eine
