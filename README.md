@@ -7,6 +7,25 @@ Die Daten stammen aus zwei CSV-Dateien, die wir mit einem ETL-Prozess
 
 **Leitfrage:** Wie entwickelt sich die Anzahl Falter pro Jahr?
 
+## Datenquelle: Biodiversitätsmonitoring Schweiz (BDM)
+Die Daten stammen vom Biodiversitätsmonitoring Schweiz (BDM): https://www.biodiversitymonitoring.ch/index.php/de/daten/datenbezug
+
+Das BDM erfasst langfristig die Entwicklung der Artenvielfalt in der Schweiz. Unsere Daten stammen aus dem Messnetz Landschaften – Tagfalter. Die erhobenen Rohdaten stellt das BDM interessierten Organisationen zur Verfügung. Voraussetzung ist ein Datennutzungsvertrag. Das Programm wird von der Hintermann & Weber AG (Ökologische Beratung, Planung und Forschung) betreut.
+
+**Erhebung der Tagfalter**
+- Rund 500 Probeflächen → 1 km² in der Schweiz
+- Pro Jahr wird 1/5 der Flächen untersucht → jede Fläche alle 5 Jahre
+- Erfassung entlang festgelegter Transekte
+- Gezählt werden Tagfalter bis 5 m Entfernung
+- Nicht im Flug bestimmbare Tiere werden kurz gefangen, bestimmt und freigelassen
+- 4–7 Begehungen pro Aufnahmejahr, abhängig von der Höhenstufe
+- Jährlich werden rund 3000 km Transekte begangen
+- Die Beobachtungen werden per App mit GPS-Koordinaten erfasst.
+
+Zuordnung zu unseren Daten: Eine Aufnahme (aiD_KD) gehört zu einem Aufnahmejahr (yearBU). Zu jeder Aufnahme gibt es Sichtungen mit der Anzahl Individuen (Ind).
+
+Quelle der Methodik: https://www.biodiversitymonitoring.ch/index.php/de/methodik/messnetz-landschaften
+
 ## Die Daten
 | Datei | Wichtige Spalten | Bedeutung |
 |---|---|---|
