@@ -83,6 +83,7 @@ foreach ($sources as $falter => $path) {
         // aufnahme_falter.csv
         if ($falter === 'aufnahme') {
             $rawRows[] = [
+                'source' => 'aufnahme',   // zur Unterscheidung bei Tranform
                 'observation_id' => $row[$courseColumn],
                 'year' => $row['yearBu'],
             ];
@@ -90,6 +91,7 @@ foreach ($sources as $falter => $path) {
 
         if ($falter === 'sichtung') {
             $rawRows[] = [
+                'source' => 'sichtung',   // zur Unterscheidung bei Tranform
                 'observation_id' => $row[$courseColumn],
                 'count' => $row['Ind'],
             ];
@@ -102,9 +104,10 @@ foreach ($sources as $falter => $path) {
 }
 
 // In Terminal ausgeben, wie viele Zeilen eingelesen wurden, als Test, ob unser extract.php richtig aufgebaut ist
-echo count($rawRows) . " Zeilen eingelesen\n";
-print_r($rawRows[0]);
-print_r($rawRows[count($rawRows) - 1]);
+// delete -- echo count($rawRows) . " Zeilen eingelesen\n";
+// delete -- print_r($rawRows[0]);
+// delete -- print_r($rawRows[count($rawRows) - 1]);
+
 
 // include kann den Rückgabewert einer Datei übernehmen. Neben den Rohdaten
 // werden die verarbeiteten Semesterkürzel mitgeliefert; das erleichtert eine
