@@ -19,4 +19,3 @@ echo "\n=== ERSTE 3 JAHRE ===\n";
 print_r(array_slice($result['data'], 0, 3));
 
 echo "\n=== ANZAHL JAHRE: " . count($result['data']) . " ===\n";
- 
