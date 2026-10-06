@@ -16,6 +16,12 @@
 // Aktiviert strikte Typprüfung für Funktionsaufrufe in dieser Datei.
 declare(strict_types=1);
 
+ini_set('display_errors', '1');
+error_reporting(E_ALL);
+
+// load.php ist ein administratives Werkzeug und keine gestaltete Webseite.
+header('Content-Type: text/plain; charset=utf-8');
+
 // load.php ist ein administratives Werkzeug und keine gestaltete Webseite.
 // Die Fortschrittsmeldungen werden deshalb als gut lesbarer Klartext gesendet.
 header('Content-Type: text/plain; charset=utf-8');
