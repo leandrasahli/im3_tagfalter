@@ -1,9 +1,9 @@
 <?php
-/** -- FULLL KI GENERIERT ---
+/**
  * Load – schreibt die Jahresstatistik der Falter mit PDO in MySQL.
  *
- * Vorher etl/schema.sql in phpMyAdmin ausführen. Danach diese Datei einmal
- * über die eigene Domain aufrufen.
+ * Die Tabellen legt diese Datei bei Bedarf selbst an. Sie muss einmal
+ * über die eigene Domain aufgerufen werden.
  *
  * Diese Datei ist der letzte Schritt des ETL-Prozesses:
  *
@@ -16,11 +16,11 @@
 // Aktiviert strikte Typprüfung für Funktionsaufrufe in dieser Datei.
 declare(strict_types=1);
 
+// Zeigt PHP-Fehler direkt im Browser an. Auf vielen Servern sind sie sonst
+// ausgeschaltet und man sieht nur eine leere Seite. Nach der Entwicklung
+// diese zwei Zeilen wieder entfernen.
 ini_set('display_errors', '1');
 error_reporting(E_ALL);
-
-// load.php ist ein administratives Werkzeug und keine gestaltete Webseite.
-header('Content-Type: text/plain; charset=utf-8');
 
 // load.php ist ein administratives Werkzeug und keine gestaltete Webseite.
 // Die Fortschrittsmeldungen werden deshalb als gut lesbarer Klartext gesendet.
@@ -29,10 +29,6 @@ header('Content-Type: text/plain; charset=utf-8');
 // Die Zugangsdaten liegen ausserhalb des ETL-Unterordners im Projektstamm.
 // __DIR__ zeigt auf etl; /.. wechselt genau eine Ebene nach oben.
 $configPath = __DIR__ . '/../config.php';
-
-// Diese Ausgabe dient als einfache Kontrolle, welche Konfigurationsdatei auf
-// dem Server tatsächlich verwendet wird.
-echo $configPath . "\n";
 
 // Ohne Konfiguration ist keine Datenbankverbindung möglich. HTTP 503 bedeutet
 // "Service Unavailable" und signalisiert einen Konfigurationsfehler, nicht
@@ -47,24 +43,53 @@ if (!is_file($configPath)) {
 // $username, $password und $options zur Verfügung.
 require $configPath;
 
-// transform.php führt intern zuerst extract.php aus und gibt danach den
-// vollständigen Datenvertrag zurück. Load benötigt daraus zwei Teile:
-// die Jahreszeilen und das Audit-Protokoll. (Es gibt hier keine Semester-
-// Stammdaten wie im Stundenplan, das Jahr steht direkt in jeder Zeile.)
-$result = include __DIR__ . '/transform.php';
-$rows = $result['data'];
-$audit = $result['audit'];
-
-// Frühe Kontrollausgabe: Schon vor der Verbindung ist sichtbar, wie viele
-// bereinigte Jahreszeilen überhaupt geschrieben werden sollen.
-echo 'Der Transform liefert ' . count($rows) . " Jahre.\n\n";
+// Diese Ausgabe dient als einfache Kontrolle, welche Konfigurationsdatei auf
+// dem Server tatsächlich verwendet wird. Sie steht bewusst NACH der Prüfung:
+// Nach einer Ausgabe lässt sich der HTTP-Statuscode nicht mehr setzen.
+echo $configPath . "\n";
 
 // PDO- und SQL-Fehler werden durch die Optionen aus config.php als Exceptions
 // ausgelöst und gemeinsam im catch-Block behandelt.
 try {
+    // transform.php führt intern zuerst extract.php aus und gibt danach den
+    // vollständigen Datenvertrag zurück. Load benötigt daraus zwei Teile:
+    // die Jahreszeilen und das Audit-Protokoll. Der Aufruf steht bewusst
+    // INNERHALB von try: Fehler beim Einlesen der CSVs (z.B. "Datei nicht
+    // gefunden") werden so unten im catch-Block sichtbar gemeldet.
+    $result = include __DIR__ . '/transform.php';
+    $rows = $result['data'];
+    $audit = $result['audit'];
+
+    // Frühe Kontrollausgabe: Schon vor der Verbindung ist sichtbar, wie viele
+    // bereinigte Jahreszeilen überhaupt geschrieben werden sollen.
+    echo 'Der Transform liefert ' . count($rows) . " Jahre.\n\n";
+
     // PDO baut die Verbindung zum in $dsn beschriebenen MySQL-Server auf.
     $pdo = new PDO($dsn, $username, $password, $options);
     echo "Verbindung steht.\n\n";
+
+    // Die Tabellen werden bei Bedarf automatisch angelegt. "IF NOT EXISTS"
+    // bedeutet: Gibt es die Tabelle schon, passiert nichts. Damit ersetzt
+    // dieser Block die separate Datei schema.sql.
+    //
+    // Wichtig: Das geschieht bewusst VOR beginTransaction(). In MySQL beendet
+    // jeder CREATE TABLE eine laufende Transaktion automatisch (Implicit
+    // Commit). Innerhalb der Transaktion wäre das Rollback also unzuverlässig.
+    $pdo->exec(
+        'CREATE TABLE IF NOT EXISTS falter_stats (
+            year                SMALLINT UNSIGNED NOT NULL PRIMARY KEY,
+            observations        INT UNSIGNED NOT NULL,
+            sightings           INT UNSIGNED NOT NULL,
+            total_butterflies   INT UNSIGNED NOT NULL,
+            avg_per_observation DECIMAL(10,2) NOT NULL
+        )'
+    );
+    $pdo->exec(
+        'CREATE TABLE IF NOT EXISTS etl_audit (
+            metric VARCHAR(60) NOT NULL PRIMARY KEY,
+            value  INT NOT NULL
+        )'
+    );
 
     // Ab hier bilden alle Änderungen eine Einheit. commit() speichert sie
     // endgültig; rollBack() nimmt sie bei einem Fehler vollständig zurück.
